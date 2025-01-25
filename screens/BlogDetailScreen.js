@@ -14,6 +14,8 @@ import Icon from 'react-native-vector-icons/MaterialIcons'; // Import MaterialIc
 import { doc, updateDoc, arrayUnion } from 'firebase/firestore';
 import { firestore } from '../firebase';
 import { useNavigation } from '@react-navigation/native';
+import Title from './utils/Title';
+import Webtext from './utils/Webtext';
 
 export default function BlogDetailScreen({ route }) {
   const navigation = useNavigation(); // To handle navigation
@@ -59,23 +61,14 @@ export default function BlogDetailScreen({ route }) {
 
   return (
     <View style={styles.container}>
-      {/* Status Bar with Icons */}
-      <View style={styles.statusBar}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Icon name="arrow-back" size={24} color="#fff" />
-        </TouchableOpacity>
-        <Text style={styles.statusBarTitle}>Blog Details</Text>
-        <TouchableOpacity onPress={handleLogout}>
-          <Icon name="logout" size={24} color="#fff" />
-        </TouchableOpacity>
-      </View>
+    
 
-      <Text style={styles.title}>{blog.title}</Text>
-      <Text style={styles.author}>Author: {blog.author}</Text>
+      <Title>{blog.title}</Title>
+      <Webtext>Author: {blog.author}</Webtext>
       <Text style={styles.date}>
         Published on: {blog.date ? new Date(blog.date.toDate()).toLocaleDateString() : 'Unknown'}
-      </Text>
-      <Text style={styles.content}>{blog.content}</Text>
+        </Text>
+        <Webtext>{blog.content}</Webtext>
 
       {/* Replies Section */}
       {blog.replies && blog.replies.length > 0 && (

@@ -1,41 +1,50 @@
-import React, { useState } from 'react';
-import { View, TextInput, Alert, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { auth, firestore } from '../firebase';
-import { collection, addDoc } from 'firebase/firestore';
+import React, { useState } from "react";
+import {
+  View,
+  TextInput,
+  Alert,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+} from "react-native";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { auth, firestore } from "../firebase";
+import { collection, addDoc } from "firebase/firestore";
 
 export default function SignupScreen({ navigation }) {
-  const [name, setName] = useState(''); // Added state for name
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
   const signUp = async () => {
     if (!name) {
-      Alert.alert('Error', 'Please enter your name');
+      Alert.alert("Error", "Please enter your name");
       return;
     }
-  
+
     if (password !== confirmPassword) {
-      Alert.alert('Error', 'Passwords do not match');
+      Alert.alert("Error", "Passwords do not match");
       return;
     }
-  
-    
+
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
       const user = userCredential.user;
-  
+
       // Save user data to Firestore
-      await addDoc(collection(firestore, 'users'), {
+      await addDoc(collection(firestore, "users"), {
         name, // Name of the user
         email: user.email,
         uid: user.uid,
       });
-  
-      navigation.navigate('Main');
+      navigation.navigate("Messages", { screen: "MainTabs" });
     } catch (error) {
-      Alert.alert('Error', error.message);
+      Alert.alert("Error", error.message);
     }
   };
 
@@ -75,7 +84,7 @@ export default function SignupScreen({ navigation }) {
         <Text style={styles.buttonText}>Sign Up</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+      <TouchableOpacity onPress={() => navigation.navigate("Login")}>
         <Text style={styles.loginText}>Already have an account? Log In</Text>
       </TouchableOpacity>
     </View>
@@ -85,19 +94,19 @@ export default function SignupScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: "center",
     padding: 20,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
   },
   title: {
     fontSize: 24,
-    fontWeight: 'bold',
-    textAlign: 'center',
+    fontWeight: "bold",
+    textAlign: "center",
     marginBottom: 20,
   },
   input: {
     height: 50,
-    borderColor: '#ccc',
+    borderColor: "#ccc",
     borderWidth: 1,
     borderRadius: 8,
     marginBottom: 15,
@@ -105,20 +114,20 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   button: {
-    backgroundColor: '#4CAF50',
+    backgroundColor: "#4a90e2",
     padding: 15,
     borderRadius: 8,
-    alignItems: 'center',
+    alignItems: "center",
     marginBottom: 15,
   },
   buttonText: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   loginText: {
-    color: '#4CAF50',
-    textAlign: 'center',
+    color: "#4a90e2",
+    textAlign: "center",
     fontSize: 16,
     marginTop: 10,
   },

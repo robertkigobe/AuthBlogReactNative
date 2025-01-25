@@ -19,7 +19,7 @@ export default function UsersListScreen({ navigation }) {
 
 
   const handleUserClick = (userId, userName) => {
-    navigation.navigate('Chat', { userId, userName });
+    // navigation.navigate('Chat', { userId, userName });
   };
 
   const renderItem = ({ item }) => (
@@ -44,27 +44,35 @@ export default function UsersListScreen({ navigation }) {
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
+    backgroundColor: '#f7f9fc', // Subtle background color
+    paddingTop: 40, // Add padding at the top
+    paddingHorizontal: 20, // Horizontal padding for consistent spacing
   },
   title: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    color: '#4a90e2',
+    fontSize: 28,
+    fontWeight: '700',
+    color: '#2c3e50', // Slightly muted blue-gray
+    textAlign: 'center',
     marginBottom: 20,
   },
   userItem: {
-    padding: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ddd',
+    backgroundColor: '#ffffff',
+    paddingVertical: 15,
+    paddingHorizontal: 20,
+    borderRadius: 10, // Rounded corners
+    marginBottom: 15, // Add spacing between items
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3, // Shadow for Android
   },
   userText: {
     fontSize: 18,
-    color: '#333',
+    fontWeight: '500',
+    color: '#34495e',
   },
 });

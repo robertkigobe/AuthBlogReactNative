@@ -1,29 +1,47 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, Button, Alert } from 'react-native';
 import { firestore } from '../firebase';
 import { collection, onSnapshot } from 'firebase/firestore';
-
+import { getAuth } from 'firebase/auth';
 
 export default function BlogsScreen({ navigation }) {
   const [blogs, setBlogs] = useState([]);
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
-    const unsubscribe = onSnapshot(
+    const auth = getAuth();
+    const unsubscribeAuth = auth.onAuthStateChanged((currentUser) => {
+      setUser(currentUser); // Update the user state with the current user
+      if (!currentUser) {
+        navigation.replace('Login'); // Navigate to Login if no user is logged in
+      }
+    });
+
+    const unsubscribeFirestore = onSnapshot(
       collection(firestore, 'blogs'),
       (querySnapshot) => {
-        const blogList = querySnapshot.docs.map(doc => ({
+        const blogList = querySnapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
         }));
-        setBlogs(blogList);
+        // Sort blogs by date in descending order with null check
+        const sortedBlogs = blogList.sort((a, b) => {
+          if (!a.date) return 1;  // Push items without dates to the end
+          if (!b.date) return -1;
+          return b.date.toDate() - a.date.toDate();
+        });
+        setBlogs(sortedBlogs);
       },
       (error) => {
         console.error('Error fetching blogs: ', error);
       }
     );
 
-    return () => unsubscribe();
-  }, []);
+    return () => {
+      unsubscribeAuth();
+      unsubscribeFirestore();
+    };
+  }, [navigation]);
 
   const renderBlogItem = ({ item }) => (
     <TouchableOpacity
@@ -31,7 +49,7 @@ export default function BlogsScreen({ navigation }) {
       onPress={() => navigation.navigate('BlogDetail', { blog: item })}
     >
       <Text style={styles.blogTitle}>
-        {item.title} <Text style={styles.blogAuthor}>- {item.author}</Text>
+        {item.title} <Text style={styles.blogAuthor}>- {item.authorName || 'Anonymous'}</Text>
       </Text>
       <Text style={styles.blogDate}>
         Published on: {item.date ? new Date(item.date.toDate()).toLocaleDateString() : 'Unknown'}
@@ -39,9 +57,22 @@ export default function BlogsScreen({ navigation }) {
     </TouchableOpacity>
   );
 
+  const handleCreateBlog = () => {
+    if (!user) {
+      Alert.alert('Error', 'You must be logged in to create a blog.');
+      navigation.replace('Login');
+    } else {
+      navigation.navigate('CreateBlog');
+    }
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Blogs</Text>
+      {/* Conditionally render the "Create Blog" button */}
+      {user && (
+        <Button title="Create Blog" onPress={handleCreateBlog} color="#4a90e2" />
+      )}
       <FlatList
         data={blogs}
         renderItem={renderBlogItem}
